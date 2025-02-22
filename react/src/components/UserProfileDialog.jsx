@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { useNavigate } from 'react-router-dom';
 import { X, Package2, History } from 'lucide-react';
 

@@ -15,19 +15,36 @@ const CurrentOrders = ({ currentOrders = [], setCurrentOrders, isAcceptingOrders
   const [rejectionDialog, setRejectionDialog] = useState({ open: false, orderId: null });
   const [rejectionReason, setRejectionReason] = useState("");
 
-  const acceptOrder = async (orderId) => {
+  const handleOrderStatus = async (orderId, status, rejectionReason = null) => {
     try {
-      const response = await axios.put(`http://localhost:5000/admin/current-orders/${orderId}/accept`);
-      
-      setCurrentOrders(prev => 
-        prev.map(order => 
-          order.order_id === orderId ? { ...order, ...response.data } : order
-        )
+      const response = await axios.put(
+        `http://localhost:5000/admin/current-orders/${orderId}/status`,
+        { status, rejection_reason: rejectionReason }
       );
+      
+      if (status === 'accepted') {
+        setCurrentOrders(prev => 
+          prev.map(order => 
+            order.order_id === orderId ? { ...order, order_status: 'accepted' } : order
+          )
+        );
+      } else {
+        setCurrentOrders(prev => 
+          prev.filter(order => order.order_id !== orderId)
+        );
+      }
+      
+      // Show WhatsApp status notification
+      alert(response.data.whatsappStatus);
+      
     } catch (error) {
-      console.error("Error accepting order:", error);
-      alert("Failed to accept order");
+      console.error(`Error ${status === 'accepted' ? 'accepting' : 'rejecting'} order:`, error);
+      alert(`Failed to ${status === 'accepted' ? 'accept' : 'reject'} order. WhatsApp message not sent.`);
     }
+  };
+
+  const acceptOrder = async (orderId) => {
+    await handleOrderStatus(orderId, 'accepted');
   };
 
   const handleReject = (orderId) => {
@@ -36,15 +53,7 @@ const CurrentOrders = ({ currentOrders = [], setCurrentOrders, isAcceptingOrders
 
   const confirmReject = async () => {
     try {
-      await axios.put(
-        `http://localhost:5000/admin/current-orders/${rejectionDialog.orderId}/reject`,
-        { rejection_reason: rejectionReason }
-      );
-      
-      setCurrentOrders(prev => 
-        prev.filter(order => order.order_id !== rejectionDialog.orderId)
-      );
-      
+      await handleOrderStatus(rejectionDialog.orderId, 'rejected', rejectionReason);
       setRejectionDialog({ open: false, orderId: null });
       setRejectionReason("");
     } catch (error) {
@@ -56,7 +65,7 @@ const CurrentOrders = ({ currentOrders = [], setCurrentOrders, isAcceptingOrders
   const toggleReadyStatus = async (orderId) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/admin/current-orders/${orderId}/ready`
+        `http://localhost:5000/admin/current-orders/${orderId}/pickup-status`
       );
       
       setCurrentOrders(prev => 
@@ -64,6 +73,11 @@ const CurrentOrders = ({ currentOrders = [], setCurrentOrders, isAcceptingOrders
           order.order_id === orderId ? { ...order, ...response.data } : order
         )
       );
+
+      // Show WhatsApp status notification if included in response
+      if (response.data.whatsappStatus) {
+        alert(response.data.whatsappStatus);
+      }
     } catch (error) {
       console.error("Error updating ready status:", error);
       alert("Failed to update ready status");
@@ -72,8 +86,15 @@ const CurrentOrders = ({ currentOrders = [], setCurrentOrders, isAcceptingOrders
 
   const markAsPickedUp = async (orderId) => {
     try {
-      await axios.put(`http://localhost:5000/admin/current-orders/${orderId}/pickup`);
+      const response = await axios.put(
+        `http://localhost:5000/admin/current-orders/${orderId}/pickup`
+      );
       setCurrentOrders(prev => prev.filter(order => order.order_id !== orderId));
+      
+      // Show WhatsApp status notification if included in response
+      if (response.data.whatsappStatus) {
+        alert(response.data.whatsappStatus);
+      }
     } catch (error) {
       console.error("Error marking as picked up:", error);
       alert("Failed to mark as picked up");

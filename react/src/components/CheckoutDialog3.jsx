@@ -116,7 +116,7 @@ const initiateOnlinePayment = async () => {
     console.log('Saving cart data with transaction ID:', transactionId);
     localStorage.setItem(`pendingCartData_${transactionId}`, JSON.stringify(cartData));
 
-    const response = await axios.post('http://localhost:5000/order', paymentData);
+    const response = await axios.post('http://localhost:5000/payment/initiate', paymentData);
     
     if (response.data && response.data.data.instrumentResponse.redirectInfo.url) {
       // Show redirect dialog
@@ -184,6 +184,11 @@ const initiateOnlinePayment = async () => {
         if (data.payment_status === 'completed') {
           setPaymentStatus('completed');
           onPaymentComplete();
+          
+          // Show WhatsApp notification status
+          if (data.whatsappStatus) {
+            alert(data.whatsappStatus);
+          }
         }
         
       } catch (error) {

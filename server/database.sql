@@ -563,3 +563,9 @@ COMMENT ON COLUMN current_orders.transaction_id IS 'PhonePe transaction ID for o
 
 -- Add phone number column to users table
 ALTER TABLE users ADD COLUMN user_phone VARCHAR(15);
+
+ALTER TABLE reviews 
+ADD COLUMN IF NOT EXISTS order_id INTEGER;
+
+CREATE UNIQUE INDEX IF NOT EXISTS unique_user_product_order_review 
+ON reviews(user_id, product_id, order_id);

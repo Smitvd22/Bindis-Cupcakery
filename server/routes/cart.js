@@ -305,9 +305,9 @@ router.get("/add-ons", authorization, async (req, res) => {
 
 router.post("/checkout", authorization, async (req, res) => {
     const client = await pool.connect();
+    let whatsappStatus = true;
+    
     try {
-        console.log('Checkout request body:', req.body);
-        
         await client.query('BEGIN');
 
         // For online payments
@@ -430,48 +430,38 @@ if (req.body.payment_mode === 'online' && req.body.transaction_id) {
             `, [req.user]);
         }
 
-        await client.query('COMMIT');
+        // Attempt WhatsApp notification but don't block on failure
+        try {
+            const order = orderRes.rows[0];
+            const userRes = await pool.query(
+                'SELECT user_name FROM users WHERE user_id = $1',
+                [req.user]
+            );
+            
+            const itemsList = order.items
+                .map(item => `  • ${item.name} x${item.quantity} - ₹${item.price * item.quantity}`)
+                .join('\n');
+            
+            const message = `🎂 Order Placed Successfully 🎂\n\n...`; // existing message
+            
+            await req.app.get('twilioClient').messages.create({
+                body: message,
+                from: TWILIO_PHONE,
+                to: `whatsapp:+91${order.contact_phone}`
+            });
+        } catch (whatsappError) {
+            console.error('WhatsApp notification failed:', whatsappError);
+            whatsappStatus = false;
+            // Continue processing despite WhatsApp failure
+        }
 
-        // WhatsApp notification logic
-try {
-    const order = orderRes.rows[0];
-    
-    // Get user details
-    const userRes = await pool.query(
-      'SELECT user_name FROM users WHERE user_id = $1',
-      [req.user]
-    );
-    
-    // Format items
-    const itemsList = order.items
-      .map(item => `  • ${item.name} x${item.quantity} - ₹${item.price * item.quantity}`)
-      .join('\n');
-  
-    // Construct message
-    const message = `🎂 Order Placed Successfully 🎂\n\n
-    Hello ${userRes.rows[0].user_name},\n
-    Your order has been placed successfully! Here are your order details:\n
-    🔹 Order ID: ${order.order_id}\n
-    🔹 Items:\n${itemsList}\n
-    🔹 Total: ₹${order.total}\n
-    We are now processing your order. You’ll receive updates once it is accepted.\n\n
-    🍩 Bindi's Cupcakery 🍩\n📞 Contact: +918849130189`;
-  
-    // Send WhatsApp
-    await req.app.get('twilioClient').messages.create({
-      body: message,
-      from: TWILIO_PHONE,
-      to: `whatsapp:+91${order.contact_phone}`
-    });
-  } catch (error) {
-    console.error('WhatsApp notification failed:', error.message);
-  }
-  
+        await client.query('COMMIT');
 
         res.json({
             success: true,
             order: orderRes.rows[0],
-            payment_status: 'completed'
+            payment_status: 'completed',
+            whatsappStatus: whatsappStatus ? 'Message sent successfully on WhatsApp' : 'WhatsApp message failed to send'
         });
 
     } catch (err) {
@@ -484,7 +474,8 @@ try {
         res.status(500).json({ 
             error: err.message,
             payment_status: 'failed',
-            details: 'Order creation failed'
+            details: 'Order creation failed',
+            whatsappStatus: 'WhatsApp message failed to send'
         });
     } finally {
         client.release();

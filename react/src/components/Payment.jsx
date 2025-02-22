@@ -15,7 +15,7 @@ const Payment = () => {
 
     const handlePayment = async (e) => {
     e.preventDefault();
-    let res = await axios.post('http://localhost:5000/order', { ...data })
+    let res = await axios.post('http://localhost:5000/payment/initiate', { ...data })
     .then(res => {
         console.log(res)
         if (res.data && res.data.data.instrumentResponse.redirectInfo.url) {

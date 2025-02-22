@@ -11,55 +11,33 @@ const Success = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const MAX_RETRIES = 3;
 
+  // Payment processing effect
   useEffect(() => {
     const processPayment = async () => {
       try {
         console.log('Processing payment, attempt:', retryCount + 1);
-        console.log('Current localStorage state:', {
-          pendingCartData: Object.keys(localStorage).filter(key => key.startsWith('pendingCartData_')),
-          token: localStorage.getItem('token') ? 'exists' : 'missing'
-        });
-
+        
         const success = await handlePaymentSuccess();
+        
         if (!success) {
           if (retryCount < MAX_RETRIES) {
-            console.log(`Payment processing failed, retrying in 2 seconds (attempt ${retryCount + 1}/${MAX_RETRIES})`);
-            setTimeout(() => {
-              setRetryCount(prev => prev + 1);
-            }, 2000);
+            console.log(`Retrying in 2 seconds (attempt ${retryCount + 1}/${MAX_RETRIES})`);
+            setTimeout(() => setRetryCount(prev => prev + 1), 2000);
             return;
           }
-          console.log('Max retries reached, redirecting to failure page');
+          console.error('Max retries reached');
           navigate('/failure');
           return;
         }
 
-        console.log('Payment processing successful');
         setIsProcessing(false);
-
-        // Extract transaction ID from URL to display
         const urlParams = new URLSearchParams(window.location.search);
-        const transactionId = urlParams.get('transactionId');
-        setOrderDetails({ transactionId });
+        setOrderDetails({ transactionId: urlParams.get('transactionId') });
 
-        const timer = setInterval(() => {
-          setTimeLeft((prev) => {
-            if (prev <= 1) {
-              clearInterval(timer);
-              navigate('/');
-              return 0;
-            }
-            return prev - 1;
-          });
-        }, 1000);
-
-        return () => clearInterval(timer);
       } catch (error) {
         console.error('Payment processing error:', error);
         if (retryCount < MAX_RETRIES) {
-          setTimeout(() => {
-            setRetryCount(prev => prev + 1);
-          }, 2000);
+          setTimeout(() => setRetryCount(prev => prev + 1), 2000);
         } else {
           navigate('/failure');
         }
@@ -70,6 +48,26 @@ const Success = () => {
       processPayment();
     }
   }, [navigate, retryCount, isProcessing]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    let timer;
+    if (!isProcessing && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            navigate('/');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isProcessing, timeLeft, navigate]);
 
   if (isProcessing) {
     return (

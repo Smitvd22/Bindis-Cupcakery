@@ -1,13 +1,14 @@
 import React, { Fragment, useState, useEffect } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const Dashboard = ({setAuth}) => {
     const [name, setName] = useState("")
 
     async function getName() {
         try {
-            const response = await fetch("http://localhost:5000/dashboard/", {
+            const response = await fetch(getApiUrl(API_ENDPOINTS.dashboard), {
                 method: "GET",
                 headers: {token: localStorage.token }
             })

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Package2, History, CheckCircle2, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const TimelineStep = ({ active, completed, children, animate }) => {
   return (
@@ -52,7 +53,7 @@ useEffect(() => {
           return;
         }
   
-        const response = await fetch('http://localhost:5000/track/current-order', {
+        const response = await fetch(getApiUrl(API_ENDPOINTS.orderTracking + '/current-order'), {
           headers: {
             'token': token  // Changed from 'Authorization' to match your auth setup
           }
@@ -86,7 +87,7 @@ useEffect(() => {
         return;
       }
   
-      const response = await fetch('http://localhost:5000/track/order-history', {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.orderHistory), {
         headers: {
           'token': token  // Changed from 'Authorization' to match your auth setup
         }

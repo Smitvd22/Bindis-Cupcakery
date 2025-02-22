@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Star, ThumbsUp, Filter } from 'lucide-react';
 import axios from 'axios';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const CustomerFeedbacks = () => {
   const [reviews, setReviews] = useState([]);
@@ -14,8 +15,10 @@ const CustomerFeedbacks = () => {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/admin/reviews');
-      const sortedReviews = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      const response = await axios.get(getApiUrl(API_ENDPOINTS.adminReviews));
+      const sortedReviews = response.data.sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
+      );
       setReviews(sortedReviews);
       setFilteredReviews(sortedReviews);
     } catch (error) {
@@ -26,17 +29,29 @@ const CustomerFeedbacks = () => {
 
   const toggleHomepageDisplay = async (reviewId) => {
     try {
-      await axios.patch(`http://localhost:5000/admin/reviews/${reviewId}/toggle-homepage`);
-      setReviews((prevReviews) =>
-        prevReviews.map((review) =>
-          review.review_id === reviewId
-            ? { ...review, display_on_homepage: !review.display_on_homepage }
-            : review
-        )
-      );
-      fetchReviews();
+      // Update the endpoint to use the correct path
+      const response = await axios.patch(getApiUrl(API_ENDPOINTS.reviewToggleHomepage(reviewId)));
+      
+      if (response.data) {
+        setReviews((prevReviews) =>
+          prevReviews.map((review) =>
+            review.review_id === reviewId
+              ? { ...review, display_on_homepage: !review.display_on_homepage }
+              : review
+          )
+        );
+        // Refresh reviews after toggling
+        fetchReviews();
+      }
     } catch (error) {
-      setError(error.response?.data?.error || 'Failed to update review status');
+      console.error('Toggle homepage error:', error);
+      setError(
+        error.response?.data?.error || 
+        'Failed to update review status. Maximum 5 reviews can be displayed on homepage.'
+      );
+      
+      // Auto-clear error after 5 seconds
+      setTimeout(() => setError(null), 5000);
     }
   };
 

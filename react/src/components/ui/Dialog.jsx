@@ -1,5 +1,8 @@
 import React from 'react';
 
+// Add PropTypes for better type checking
+import PropTypes from 'prop-types';
+
 export const Dialog = ({ open, onOpenChange, children }) => {
   if (!open) return null;
   
@@ -16,6 +19,7 @@ export const Dialog = ({ open, onOpenChange, children }) => {
   );
 };
 
+// Add all other components with exports
 export const DialogContent = ({ children, className = "" }) => (
   <div className={`p-6 ${className}`}>
     {children}
@@ -50,3 +54,10 @@ export const Button = ({ children, className = "", ...props }) => (
     {children}
   </button>
 );
+
+// Add PropTypes
+Dialog.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onOpenChange: PropTypes.func.isRequired,
+  children: PropTypes.node.isRequired
+};

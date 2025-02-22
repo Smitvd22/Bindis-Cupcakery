@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const SimilarHampers = ({ currentHamperId }) => {
   const [randomHampers, setRandomHampers] = useState([]);
@@ -16,7 +17,7 @@ const SimilarHampers = ({ currentHamperId }) => {
 
   const fetchRandomHampers = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/hampers/random/${currentHamperId}`);
+      const response = await fetch(getApiUrl(`${API_ENDPOINTS.hampers}/random/${currentHamperId}`));
       if (!response.ok) {
         throw new Error('Failed to fetch random hampers');
       }

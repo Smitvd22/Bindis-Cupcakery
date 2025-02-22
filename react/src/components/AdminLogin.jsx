@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const AdminLogin = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/auth/admin/login", {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.adminLogin), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

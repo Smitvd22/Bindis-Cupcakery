@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require("../db"); // Your database connection
 const { validate: isUuid } = require("uuid"); // Import UUID validator
 
+// Modify the pending reviews query
 router.get("/pending/:userId", async (req, res) => {
     try {
         let { userId } = req.params;
@@ -24,9 +25,8 @@ router.get("/pending/:userId", async (req, res) => {
             )
         `);
 
-        // Get only unique pending reviews that haven't been shown yet
         const pendingReviews = await pool.query(`
-            SELECT DISTINCT ON (upr.order_id, upr.product_id) 
+            SELECT DISTINCT ON (upr.product_id) 
                 upr.id,
                 upr.product_id,
                 upr.order_id,
@@ -39,24 +39,13 @@ router.get("/pending/:userId", async (req, res) => {
             WHERE upr.user_id = $1 
             AND upr.review_status = 'pending'
             AND NOT upr.dialog_shown
-            AND NOT EXISTS (
-                SELECT 1 
-                FROM reviews r 
-                WHERE r.user_id = upr.user_id 
-                AND r.product_id = upr.product_id
-                AND r.order_id = upr.order_id
-            )
-            ORDER BY upr.order_id, upr.product_id, upr.created_at DESC
+            ORDER BY upr.product_id, upr.created_at DESC
         `, [userId]);
 
-        if (pendingReviews.rows.length === 0) {
-            return res.json({ showDialog: false });
-        }
-
         res.json({
-            showDialog: true,
+            showDialog: pendingReviews.rows.length > 0,
             reviews: pendingReviews.rows,
-            currentReview: pendingReviews.rows[0]
+            currentReview: pendingReviews.rows[0] || null
         });
     } catch (error) {
         console.error("Error fetching pending reviews:", error);

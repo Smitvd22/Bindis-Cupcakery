@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const ViewAllProducts = () => {
   const { categoryName } = useParams();
@@ -16,7 +17,7 @@ const ViewAllProducts = () => {
   const fetchProducts = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/products/category/${encodeURIComponent(categoryName)}?sort=${sortBy}`
+        getApiUrl(`${API_ENDPOINTS.products}/category/${encodeURIComponent(categoryName)}?sort=${sortBy}`)
       );
       
       if (!response.ok) {

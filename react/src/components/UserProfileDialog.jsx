@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent } from "@/components/ui/Dialog";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "../components/ui/Dialog";
 import { useNavigate } from 'react-router-dom';
 import { X, Package2, History } from 'lucide-react';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
+import PropTypes from 'prop-types';
 
 const UserProfileDialog = ({ isOpen, setIsOpen, userData, onLogout }) => {
   const navigate = useNavigate();
@@ -23,7 +30,7 @@ const UserProfileDialog = ({ isOpen, setIsOpen, userData, onLogout }) => {
         return;
       }
   
-      const response = await fetch('http://localhost:5000/track/order-history', {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.orderHistory), {
         headers: {
           'token': token
         }
@@ -172,6 +179,18 @@ const UserProfileDialog = ({ isOpen, setIsOpen, userData, onLogout }) => {
       </DialogContent>
     </Dialog>
   );
+};
+
+// Add PropTypes
+UserProfileDialog.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  setIsOpen: PropTypes.func.isRequired,
+  userData: PropTypes.shape({
+    user_name: PropTypes.string,
+    user_email: PropTypes.string,
+    user_phone: PropTypes.string
+  }),
+  onLogout: PropTypes.func.isRequired
 };
 
 export default UserProfileDialog;

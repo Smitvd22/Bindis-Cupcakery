@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Plus, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const CustomizeMenu = () => {
   const [categories, setCategories] = useState([]);
@@ -26,7 +27,7 @@ const CustomizeMenu = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/admin/categories');
+      const response = await axios.get(getApiUrl(API_ENDPOINTS.adminCategories));
       setCategories(response.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -36,7 +37,7 @@ const CustomizeMenu = () => {
   const addCategory = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/admin/categories', newCategory);
+      await axios.post(getApiUrl(API_ENDPOINTS.adminCategories), newCategory);
       setNewCategory({ name: '', description: '' });
       fetchCategories();
     } catch (error) {
@@ -47,7 +48,7 @@ const CustomizeMenu = () => {
   const deleteCategory = async (categoryId) => {
     if (window.confirm('Are you sure? This will delete all products in this category.')) {
       try {
-        await axios.delete(`http://localhost:5000/admin/categories/${categoryId}`);
+        await axios.delete(getApiUrl(`${API_ENDPOINTS.adminCategories}/${categoryId}`));
         fetchCategories();
       } catch (error) {
         console.error('Error deleting category:', error);
@@ -58,7 +59,7 @@ const CustomizeMenu = () => {
   const addProduct = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/admin/products', newProduct);
+      await axios.post(getApiUrl(API_ENDPOINTS.adminProducts), newProduct);
       setNewProduct({
         category_id: '',
         name: '',
@@ -82,7 +83,7 @@ const CustomizeMenu = () => {
   const deleteProduct = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.delete(`http://localhost:5000/admin/products/${productId}`);
+        await axios.delete(getApiUrl(`${API_ENDPOINTS.adminProducts}/${productId}`));
         fetchCategories();
       } catch (error) {
         console.error('Error deleting product:', error);
@@ -92,7 +93,7 @@ const CustomizeMenu = () => {
 
   const toggleProductStatus = async (productId) => {
     try {
-      await axios.patch(`http://localhost:5000/admin/products/${productId}/toggle-status`);
+      await axios.patch(getApiUrl(`${API_ENDPOINTS.adminProducts}/${productId}/toggle-status`));
       fetchCategories();
     } catch (error) {
       console.error('Error toggling product status:', error);

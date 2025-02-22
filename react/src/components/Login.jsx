@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from "jwt-decode"; // Import JWT decoder
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const Login = ({ setAuth }) => {
   const navigate = useNavigate();
@@ -15,39 +16,12 @@ const Login = ({ setAuth }) => {
     setInputs({ ...inputs, [e.target.name]: e.target.value });
   };
 
-  // const onSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //       const body = {email, password}
-
-  //       const response = await fetch("http://localhost:5000/auth/login", {
-  //           method: "POST",
-  //           headers: {"Content-Type": "application/json"},
-  //           body: JSON.stringify(body)
-  //       });
-
-  //       const parseRes = await response.json()
-
-  //       if (parseRes.token) {
-  //         localStorage.setItem("token", parseRes.token);
-  //         setAuth(true);
-  //         navigate('/'); // Redirect to home page after successful login
-  //       } else {
-  //         // Handle login error (show message to user)
-  //         console.error("Login failed");
-  //       }
-  //   } catch (err) {
-  //     console.error(err.message);
-  //   }
-  // };
-
-
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
         const body = { email, password };
 
-        const response = await fetch("http://localhost:5000/auth/login", {
+        const response = await fetch(getApiUrl(API_ENDPOINTS.login), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body),

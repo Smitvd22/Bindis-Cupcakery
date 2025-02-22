@@ -5,6 +5,7 @@ import CustomizeMenu from "./CustomizeMenu";
 import CustomerFeedbacks from "./CustomerFeedbacks";
 import axios from "axios";
 import DashboardContent from "./DashboardContent";
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const tabs = [
   { name: "Dashboard", icon: Home },
@@ -20,7 +21,10 @@ const AdminDashboard = () => {
     localStorage.getItem("adminActiveTab") || "Dashboard"
   );
   const [currentOrders, setCurrentOrders] = useState([]);
-  const [orderHistory, setOrderHistory] = useState([]);
+  const [orderHistory, setOrderHistory] = useState(() => {
+    const savedHistory = localStorage.getItem('orderHistory');
+    return savedHistory ? JSON.parse(savedHistory) : [];
+  });
   const [isAcceptingOrders, setIsAcceptingOrders] = useState(
     localStorage.getItem("acceptingOrders") !== "false"
   );
@@ -62,7 +66,7 @@ const AdminDashboard = () => {
   const confirmRejectOrder = async () => {
     if (selectedOrderId && rejectionReason.trim()) {
       try {
-        await axios.put(`http://localhost:5000/admin/current-orders/${selectedOrderId}/status`, {
+        await axios.put(getApiUrl(API_ENDPOINTS.orderStatus(selectedOrderId)), {
           status: 'rejected',
           rejection_reason: rejectionReason
         });
@@ -72,7 +76,6 @@ const AdminDashboard = () => {
         setSelectedOrderId(null);
         setRejectionReason("");
         
-        // Refresh orders after rejection
         fetchCurrentOrders();
       } catch (error) {
         console.error('Error updating order status:', error);
@@ -88,6 +91,7 @@ const AdminDashboard = () => {
   };
 
   const confirmLogout = () => {
+    localStorage.removeItem('orderHistory');
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminId");
     localStorage.removeItem("adminName");
@@ -115,9 +119,13 @@ const AdminDashboard = () => {
     if (activeTab === "Order History") fetchOrderHistory();
   }, [activeTab]);
 
+  useEffect(() => {
+    localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+  }, [orderHistory]);
+
   const fetchCurrentOrders = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/admin/current-orders");
+      const response = await axios.get(getApiUrl(API_ENDPOINTS.currentOrders));
       setCurrentOrders(response.data);
     } catch (error) {
       console.error("Error fetching current orders:", error);
@@ -126,8 +134,10 @@ const AdminDashboard = () => {
 
   const fetchOrderHistory = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/admin/order-history");
-      setOrderHistory(response.data);
+      const response = await axios.get(getApiUrl(API_ENDPOINTS.orderHistory));
+      const history = response.data;
+      setOrderHistory(history);
+      localStorage.setItem('orderHistory', JSON.stringify(history));
     } catch (error) {
       console.error("Error fetching order history:", error);
     }
@@ -135,19 +145,18 @@ const AdminDashboard = () => {
 
   const handleOrderStatus = async (orderId, status) => {
     try {
-      await axios.put(`http://localhost:5000/admin/current-orders/${orderId}/status`, { status });
+      await axios.put(getApiUrl(API_ENDPOINTS.orderStatus(orderId)), { status });
       
-      if (status === 'accepted') {  // Changed from 'accepted'
+      if (status === 'accepted') {
         setCurrentOrders(currentOrders.map(order => 
           order.order_id === orderId 
-            ? { ...order, admin_status: 'accepted', pickup_status: 'preparing' }  // Changed from 'accepted'
+            ? { ...order, admin_status: 'accepted', pickup_status: 'preparing' }
             : order
         ));
       } else if (status === 'rejected') {
         setCurrentOrders(currentOrders.filter(order => order.order_id !== orderId));
       }
       
-      // Refresh orders after status change
       fetchCurrentOrders();
     } catch (error) {
       console.error('Error updating order status:', error);
@@ -157,9 +166,8 @@ const AdminDashboard = () => {
 
   const handlePickupStatus = async (orderId) => {
     try {
-      const response = await axios.put(`http://localhost:5000/admin/current-orders/${orderId}/pickup-status`);
+      const response = await axios.put(getApiUrl(API_ENDPOINTS.pickupStatus(orderId)));
       
-      // Update the local state to reflect the new pickup status
       setCurrentOrders(currentOrders.map(order => 
         order.order_id === orderId 
           ? { ...order, pickup_status: response.data.new_status }
@@ -173,8 +181,8 @@ const AdminDashboard = () => {
 
   const markAsPickedUp = async (orderId) => {
     try {
-      const response = await axios.put(`http://localhost:5000/admin/current-orders/${orderId}/pickup`);
-
+      const response = await axios.put(getApiUrl(API_ENDPOINTS.orderPickup(orderId)));
+  
       if (response.data.order) {
         setCurrentOrders(prev => prev.filter(order => order.order_id !== orderId));
         setOrderHistory(prev => [
@@ -186,7 +194,7 @@ const AdminDashboard = () => {
           },
           ...prev
         ]);
-
+  
         alert("Order marked as picked up successfully!");
       }
     } catch (error) {

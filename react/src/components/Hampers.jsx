@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import CustomizeDessertBox from './CustomizeDessertBox';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const Hampers = () => {
   const [searchParams] = useSearchParams();
@@ -23,7 +24,7 @@ const Hampers = () => {
   const searchHampers = async (query) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5000/hampers/search?query=${encodeURIComponent(query)}`);
+      const response = await fetch(getApiUrl(`${API_ENDPOINTS.hampers}/search?query=${encodeURIComponent(query)}`));
 
       if (!response.ok) {
         throw new Error('Failed to fetch search results');
@@ -40,7 +41,7 @@ const Hampers = () => {
 
   const fetchHampers = async () => {
     try {
-      const response = await fetch("http://localhost:5000/hampers/");
+      const response = await fetch(getApiUrl(API_ENDPOINTS.hampers));
       
       if (!response.ok) {
         throw new Error('Failed to fetch hampers');

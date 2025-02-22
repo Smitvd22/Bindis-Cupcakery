@@ -6,6 +6,7 @@ import CategoryNav from "./CategoryNav";
 import ProductSection from "./ProductSection";
 import AboutUs from "./AboutUs";
 import Reviews from "./Reviews";
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const Home = () => {
   const [pendingReview, setPendingReview] = useState(null);
@@ -26,9 +27,7 @@ const Home = () => {
     try {
       console.log('Fetching products...');
       // Update the endpoint URL to include /products
-      const response = await axios.get('/products/home', {
-        baseURL: 'http://localhost:5000' // Add the base URL
-      });
+      const response = await axios.get(getApiUrl(API_ENDPOINTS.homeProducts)); // Add the base URL
       
       console.log('Products response:', response.data);
       

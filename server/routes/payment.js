@@ -97,14 +97,14 @@ router.post("/status", async (req, res) => {
 
     if (isSuccess) {
       console.log('Payment successful, redirecting to success page');
-      return res.redirect(`http://localhost:5173/success?transactionId=${merchantTransactionId}`);
+      return res.redirect(`${process.env.CORS_ORIGIN}/success?transactionId=${merchantTransactionId}`);
     } else {
       console.log('Payment unsuccessful:', response.data);
-      return res.redirect(`http://localhost:5173/failure?transactionId=${merchantTransactionId}&reason=${encodeURIComponent(response.data.message || 'Payment failed')}`);
+      return res.redirect(`${process.env.CORS_ORIGIN}/failure?transactionId=${merchantTransactionId}&reason=${encodeURIComponent(response.data.message || 'Payment failed')}`);
     }
   } catch (error) {
     console.error('Payment status check failed:', error);
-    return res.redirect(`http://localhost:5173/failure?transactionId=${merchantTransactionId}&error=${encodeURIComponent(error.message)}`);
+    return res.redirect(`${process.env.CORS_ORIGIN}/failure?transactionId=${merchantTransactionId}&error=${encodeURIComponent(error.message)}`);
   }
 });
 

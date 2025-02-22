@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 const Payment = () => {
     
     const navigate = useNavigate()
@@ -15,7 +16,7 @@ const Payment = () => {
 
     const handlePayment = async (e) => {
     e.preventDefault();
-    let res = await axios.post('http://localhost:5000/payment/initiate', { ...data })
+    let res = await axios.post(getApiUrl(API_ENDPOINTS.paymentInitiate), { ...data })
     .then(res => {
         console.log(res)
         if (res.data && res.data.data.instrumentResponse.redirectInfo.url) {

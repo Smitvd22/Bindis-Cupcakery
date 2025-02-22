@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 export const handlePaymentSuccess = async () => {
   try {
@@ -13,7 +14,7 @@ export const handlePaymentSuccess = async () => {
     console.log('Processing payment success for transaction:', transactionId);
 
     // Verify payment status
-    const verifyResponse = await axios.get(`http://localhost:5000/payment/verify/${transactionId}`);
+    const verifyResponse = await axios.get(getApiUrl(API_ENDPOINTS.paymentVerify(transactionId)));
     console.log('Payment verification response:', verifyResponse.data);
 
     if (!verifyResponse.data.success) {
@@ -41,8 +42,7 @@ export const handlePaymentSuccess = async () => {
     };
 
     // Complete checkout
-    const checkoutResponse = await axios.post(
-      'http://localhost:5000/cart/checkout',
+    const checkoutResponse = await axios.post(getApiUrl(API_ENDPOINTS.cart + '/checkout'),
       orderData,
       {
         headers: {

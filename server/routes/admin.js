@@ -604,18 +604,18 @@ router.patch("/reviews/:reviewId/toggle-homepage", async (req, res) => {
   try {
     await client.query('BEGIN');
 
-    // Check if we're trying to add to homepage and how many are already there
+    // Check current display status
     const { rows: [{ display_status }] } = await client.query(
       "SELECT display_on_homepage as display_status FROM reviews WHERE review_id = $1",
       [reviewId]
     );
 
+    // If trying to add to homepage, check the limit
     if (!display_status) {
       const { rows: [{ count }] } = await client.query(
         "SELECT COUNT(*) FROM reviews WHERE display_on_homepage = true"
       );
 
-      // Limit to 5 reviews on homepage
       if (parseInt(count) >= 5) {
         await client.query('ROLLBACK');
         return res.status(400).json({
@@ -634,12 +634,8 @@ router.patch("/reviews/:reviewId/toggle-homepage", async (req, res) => {
     );
 
     await client.query('COMMIT');
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Review not found" });
-    }
-
     res.json(result.rows[0]);
+
   } catch (err) {
     await client.query('ROLLBACK');
     console.error("Error toggling review homepage status:", err);

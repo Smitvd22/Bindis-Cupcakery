@@ -1,93 +1,8 @@
-// import React from 'react';
-// import { Link } from 'react-router-dom';
-// import { 
-//   Home, 
-//   ShoppingCart, 
-//   Package, 
-//   ShoppingBasket, 
-//   User, 
-//   LogIn 
-// } from 'lucide-react';
-
-// const Navbar = ({ isAuthenticated, setAuth, userName }) => {
-//   return (
-//     <nav className="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
-//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//         <div className="flex items-center justify-between h-16">
-//           {/* Logo and Home Link */}
-//           <div className="flex items-center">
-//             <Link to="/" className="flex items-center">
-//               <Home className="h-6 w-6 text-blue-600 mr-2" />
-//               <span className="text-xl font-bold text-gray-800">MyApp</span>
-//             </Link>
-//           </div>
-
-//           {/* Navigation Links */}
-//           <div className="flex space-x-4">
-//             <Link 
-//               to="/orders" 
-//               className="text-gray-600 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md flex items-center"
-//             >
-//               <Package className="h-5 w-5 mr-2" />
-//               Orders
-//             </Link>
-//             <Link 
-//               to="/hampers" 
-//               className="text-gray-600 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md flex items-center"
-//             >
-//               <ShoppingBasket className="h-5 w-5 mr-2" />
-//               Hampers
-//             </Link>
-//             <Link 
-//               to="/cart" 
-//               className="text-gray-600 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md flex items-center"
-//             >
-//               <ShoppingCart className="h-5 w-5 mr-2" />
-//               Cart
-//             </Link>
-//           </div>
-
-//           {/* Login/User Section */}
-//           <div>
-//             {isAuthenticated ? (
-//               <div className="flex items-center space-x-4">
-//                 <span className="text-gray-700">
-//                   <User className="h-5 w-5 inline-block mr-2" />
-//                   Hello, {userName || 'User'}
-//                 </span>
-//                 <button 
-//                   onClick={(e) => {
-//                     e.preventDefault();
-//                     localStorage.removeItem("token");
-//                     setAuth(false);
-//                   }}
-//                   className="text-red-600 hover:bg-red-50 px-3 py-2 rounded-md"
-//                 >
-//                   Logout
-//                 </button>
-//               </div>
-//             ) : (
-//               <Link 
-//                 to="/login" 
-//                 className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 flex items-center"
-//               >
-//                 <LogIn className="h-5 w-5 mr-2" />
-//                 Login / Sign Up
-//               </Link>
-//             )}
-//           </div>
-//         </div>
-//       </div>
-//     </nav>
-//   );
-// };
-
-// export default Navbar;
-
 import { Store, Search, Package2, History, CakeSlice, ShoppingCart, User, LogIn, Grid } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import UserProfileDialog from '../components/UserProfileDialog'
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 function Navbar({ isAuthenticated, setAuth, userName, userEmail, userPhone }) {
   const [displayText, setDisplayText] = useState("")
@@ -119,7 +34,7 @@ function Navbar({ isAuthenticated, setAuth, userName, userEmail, userPhone }) {
           return;
         }
   
-        const response = await fetch("http://localhost:5000/auth/user-data", {
+        const response = await fetch(getApiUrl(API_ENDPOINTS.userProfile), {
           method: "GET",
           headers: { 
             token: token

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const SimilarProducts = ({ currentProductId }) => {
   const [randomProducts, setRandomProducts] = useState([]);
@@ -17,7 +18,7 @@ const SimilarProducts = ({ currentProductId }) => {
   const fetchRandomProducts = async () => {
     try {
       // Updated endpoint to fetch random products
-      const response = await fetch(`http://localhost:5000/products/random/${currentProductId}`);
+      const response = await fetch(getApiUrl(`${API_ENDPOINTS.products}/random/${currentProductId}`));
       if (!response.ok) {
         throw new Error('Failed to fetch random products');
       }

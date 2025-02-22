@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const Register = ({setAuth}) => {
   const [inputs, setInputs] = useState({
@@ -20,7 +21,7 @@ const Register = ({setAuth}) => {
     try {
         const body = {email, password, name}
 
-        const response = await fetch("http://localhost:5000/auth/register", {
+        const response = await fetch(getApiUrl(API_ENDPOINTS.register), {
             method: "POST",
             headers: {"Content-Type" : "application/json"},
             body: JSON.stringify(body)   

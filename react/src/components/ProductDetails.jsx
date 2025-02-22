@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Heart, Info } from 'lucide-react';
 import SimilarProducts from './SimilarProducts';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -20,7 +21,7 @@ const ProductDetails = () => {
 
   const fetchProductDetails = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/products/${id}`);
+      const response = await fetch(getApiUrl(`${API_ENDPOINTS.products}/${id}`));
       if (!response.ok) throw new Error('Failed to fetch product details');
       const parseRes = await response.json();
       
@@ -48,7 +49,7 @@ const ProductDetails = () => {
         return;
       }
   
-      const response = await fetch('http://localhost:5000/cart/add', {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.cart + '/add'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

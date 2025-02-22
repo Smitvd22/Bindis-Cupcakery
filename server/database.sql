@@ -569,3 +569,8 @@ ADD COLUMN IF NOT EXISTS order_id INTEGER;
 
 CREATE UNIQUE INDEX IF NOT EXISTS unique_user_product_order_review 
 ON reviews(user_id, product_id, order_id);
+
+-- Add indexes for better query performance
+CREATE INDEX IF NOT EXISTS idx_user_pending_reviews_user_id ON user_pending_reviews(user_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_display_homepage ON reviews(display_on_homepage);
+CREATE INDEX IF NOT EXISTS idx_order_history_user_id ON order_history(user_id);

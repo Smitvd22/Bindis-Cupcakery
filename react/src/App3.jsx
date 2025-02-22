@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { AnimatePresence } from "framer-motion";
+import { getApiUrl, API_ENDPOINTS } from './config/api';
 
 // Components
 import Login from "./components/Login";
@@ -72,7 +73,7 @@ const AppContent = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/api/reviews/pending/${userId}`, {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.pendingReviews(userId)), {
         headers: {
           'Authorization': `Bearer ${localStorage.token}`
         }
@@ -94,7 +95,7 @@ const AppContent = () => {
 
   async function isAuth() {
     try {
-      const response = await fetch("http://localhost:5000/auth/is-verify", {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.isVerify), {
         method: "GET",
         headers: { token: localStorage.token }
       });
@@ -107,7 +108,7 @@ const AppContent = () => {
 
   async function getUserInfo() {
     try {
-      const response = await fetch("http://localhost:5000/dashboard/", {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.dashboard), {
         method: "GET",
         headers: { token: localStorage.token }
       });

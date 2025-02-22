@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const ReviewDialog = ({ review, userId, onClose, onSubmitSuccess }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSkip = async () => {
     try {
-      await fetch("http://localhost:5000/api/reviews/mark-shown", {
+      await fetch(getApiUrl(`${API_ENDPOINTS.reviews}/mark-shown`), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -23,14 +25,15 @@ const ReviewDialog = ({ review, userId, onClose, onSubmitSuccess }) => {
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      alert("Please select a rating!");
+      setError("Please select a rating!");
       return;
     }
     
     setIsSubmitting(true);
+    setError(null);
+    
     try {
-      // Submit review AND mark as shown in single request
-      const response = await fetch("http://localhost:5000/api/reviews/submit", {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.reviewSubmit), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,17 +45,24 @@ const ReviewDialog = ({ review, userId, onClose, onSubmitSuccess }) => {
           orderId: review.order_id,
           rating,
           comment,
-          reviewId: review.id // Add review ID to request
+          reviewId: review.id
         })
       });
   
-      if (!response.ok) throw new Error("Failed to submit review");
+      if (!response.ok) {
+        throw new Error("Failed to submit review");
+      }
   
-      onSubmitSuccess();
-      onClose();
+      const data = await response.json();
+      if (data.success) {
+        onSubmitSuccess();
+        onClose();
+      } else {
+        throw new Error(data.error || "Failed to submit review");
+      }
     } catch (error) {
       console.error("Error submitting review:", error);
-      alert("Failed to submit review. Please try again.");
+      setError(error.message || "Failed to submit review. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -85,6 +95,12 @@ const ReviewDialog = ({ review, userId, onClose, onSubmitSuccess }) => {
           value={comment}
           onChange={(e) => setComment(e.target.value)}
         />
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+            {error}
+          </div>
+        )}
 
         <div className="flex justify-between">
           <button 

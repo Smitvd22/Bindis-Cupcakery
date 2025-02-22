@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 // Dialog Component (unchanged)
 const Dialog = ({ open, onOpenChange, children }) => {
@@ -116,7 +117,7 @@ const initiateOnlinePayment = async () => {
     console.log('Saving cart data with transaction ID:', transactionId);
     localStorage.setItem(`pendingCartData_${transactionId}`, JSON.stringify(cartData));
 
-    const response = await axios.post('http://localhost:5000/payment/initiate', paymentData);
+    const response = await axios.post(getApiUrl(API_ENDPOINTS.paymentInitiate), paymentData);
     
     if (response.data && response.data.data.instrumentResponse.redirectInfo.url) {
       // Show redirect dialog
@@ -166,7 +167,7 @@ const initiateOnlinePayment = async () => {
           payment_mode: 'takeaway'
         };
   
-        const response = await fetch('http://localhost:5000/cart/checkout', {
+        const response = await fetch(getApiUrl(API_ENDPOINTS.cart + '/checkout'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

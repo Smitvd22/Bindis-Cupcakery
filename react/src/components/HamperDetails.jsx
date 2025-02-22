@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Heart, ChevronDown } from 'lucide-react';
 import SimilarHampers from './SimilarHampers';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const HamperDetails = () => {
   const { id } = useParams();
@@ -18,7 +19,7 @@ const HamperDetails = () => {
 
   const fetchHamperDetails = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/hampers/${id}`);
+      const response = await fetch(getApiUrl(`${API_ENDPOINTS.hampers}/${id}`));
       if (!response.ok) throw new Error('Failed to fetch hamper details');
       const parseRes = await response.json();
       setHamper(parseRes);
@@ -29,9 +30,6 @@ const HamperDetails = () => {
     }
   };
 
-//   const checkDelivery = async () => {
-//     console.log('Checking delivery for pincode:', pincode);
-//   };
 
 const addToCart = async () => {
     try {
@@ -41,7 +39,7 @@ const addToCart = async () => {
             return;
         }
     
-        const response = await fetch('http://localhost:5000/cart/add', {
+        const response = await fetch(getApiUrl(API_ENDPOINTS.cart + '/add'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -132,29 +130,6 @@ const addToCart = async () => {
           <h1 className="text-2xl font-semibold mb-2">{hamper.name}</h1>
           <div className="text-2xl font-bold">₹ {hamper.price}</div>
         </div>
-
-        {/* Delivery Check */}
-        {/* <div className="bg-gray-50 rounded-lg p-4">
-          <h3 className="font-medium mb-2">Check Delivery Availability</h3>
-          <div className="flex gap-2">
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                value={pincode}
-                onChange={(e) => setPincode(e.target.value)}
-                placeholder="Enter Pincode"
-                className="w-full px-4 py-2 border rounded"
-              />
-            </div>
-            <button
-              onClick={checkDelivery}
-              className="px-6 py-2 bg-teal-700 text-white rounded"
-            >
-              Check
-            </button>
-          </div>
-          <p className="text-sm text-gray-500 mt-1">Available in limited cities*</p>
-        </div> */}
 
         {/* Offers */}
         <div 

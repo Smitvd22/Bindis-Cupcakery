@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import CheckoutDialog from './CheckoutDialog';
-import CheckoutDialog2 from './CheckoutDialog2';
 import CheckoutDialog3 from './CheckoutDialog3';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const Cart = () => {
   const [cartData, setCartData] = useState({ items: [], total: 0 });
@@ -34,7 +33,7 @@ const Cart = () => {
 
   const fetchCartData = async () => {
     try {
-      const response = await fetch('http://localhost:5000/cart', {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.cart), {
         headers: {
           'token': localStorage.getItem('token')
         }
@@ -74,7 +73,7 @@ const Cart = () => {
 
   const fetchAddOns = async () => {
     try {
-      const response = await fetch('http://localhost:5000/cart/add-ons', {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.cart + '/add-ons'), {
         headers: {
           'token': localStorage.getItem('token')
         }
@@ -93,7 +92,7 @@ const Cart = () => {
     if (newQuantity < 1) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/cart/update/${itemId}`, {
+      const response = await fetch(getApiUrl(`${API_ENDPOINTS.cart}/update/${itemId}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -112,7 +111,7 @@ const Cart = () => {
 
   const removeItem = async (itemId) => {
     try {
-      const response = await fetch(`http://localhost:5000/cart/remove/${itemId}`, {
+      const response = await fetch(getApiUrl(`${API_ENDPOINTS.cart}/remove/${itemId}`), {
         method: 'DELETE',
         headers: {
           'token': localStorage.getItem('token')
@@ -129,7 +128,7 @@ const Cart = () => {
 
   const addToCart = async (productId, price) => {
     try {
-      const response = await fetch('http://localhost:5000/cart/add', {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.cart + '/add'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

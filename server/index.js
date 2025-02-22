@@ -7,19 +7,18 @@ require('dotenv').config(); // Add at top
 const twilio = require('twilio');
 const axios = require('axios');
 const bodyParser = require("body-parser");
-const crypto = require('crypto');
-const Razorpay = require('razorpay');
 
 // Middleware
 app.use(express.json()); 
 app.use(express.urlencoded({extended: false}));
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN,
+  credentials: true
+}));
 app.use(bodyParser.urlencoded({
   extended: false
 }));
 
-let salt_key = process.env.SALT_KEY
-let merchant_id = process.env.MERCHANT_ID
 
 const TwilioClient = twilio(
   process.env.TWILIO_ACCOUNT_SID,

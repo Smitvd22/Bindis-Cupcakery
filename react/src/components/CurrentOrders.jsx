@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -18,7 +19,7 @@ const CurrentOrders = ({ currentOrders = [], setCurrentOrders, isAcceptingOrders
   const handleOrderStatus = async (orderId, status, rejectionReason = null) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/admin/current-orders/${orderId}/status`,
+        getApiUrl(API_ENDPOINTS.orderStatus(orderId)),
         { status, rejection_reason: rejectionReason }
       );
       
@@ -65,7 +66,7 @@ const CurrentOrders = ({ currentOrders = [], setCurrentOrders, isAcceptingOrders
   const toggleReadyStatus = async (orderId) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/admin/current-orders/${orderId}/pickup-status`
+        getApiUrl(API_ENDPOINTS.pickupStatus(orderId))
       );
       
       setCurrentOrders(prev => 
@@ -87,7 +88,7 @@ const CurrentOrders = ({ currentOrders = [], setCurrentOrders, isAcceptingOrders
   const markAsPickedUp = async (orderId) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/admin/current-orders/${orderId}/pickup`
+        getApiUrl(API_ENDPOINTS.orderPickup(orderId))
       );
       setCurrentOrders(prev => prev.filter(order => order.order_id !== orderId));
       

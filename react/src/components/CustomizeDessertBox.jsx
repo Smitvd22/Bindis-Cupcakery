@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { toast } from 'react-hot-toast'; // Using react-hot-toast instead of shadcn
 import { useNavigate } from 'react-router-dom';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
 const CustomizeDessertBox = ({ isOpen, onClose }) => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -57,7 +58,7 @@ const CustomizeDessertBox = ({ isOpen, onClose }) => {
 
         const totalPrice = selectedItems.reduce((sum, item) => sum + item.price, 0);
 
-        const response = await fetch('http://localhost:5000/cart/add2', {
+        const response = await fetch(getApiUrl(API_ENDPOINTS.cart + '/add2'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

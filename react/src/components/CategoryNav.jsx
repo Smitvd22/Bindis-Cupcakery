@@ -24,8 +24,8 @@ export default function CategoryNav() {
 
   return (
     <nav id="category-section" className="relative py-12 bg-pink-50 isolate">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-center gap-12 flex-wrap">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6 lg:gap-8">
           {categories.map((category, index) => (
             <motion.div
               key={category.name}
@@ -33,25 +33,26 @@ export default function CategoryNav() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               style={{ transform: 'translate3d(0, 0, 0)' }}
-              className="relative"
+              className="relative w-full"
             >
               <Link
                 to={category.href}
-                className="flex flex-col items-center group"
+                className="flex flex-col items-center group w-full"
                 onMouseEnter={() => setActiveCategory(category.name)}
                 onMouseLeave={() => setActiveCategory(null)}
               >
-                <div className="w-40 h-40 rounded-2xl bg-white shadow-lg mb-4 overflow-hidden
+                <div className="w-full aspect-square rounded-2xl bg-white shadow-lg mb-4 overflow-hidden
                              group-hover:shadow-xl transition-all duration-300 relative">
                   <img
                     src={category.image}
                     alt={category.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10
                                transition-colors duration-300" />
                 </div>
-                <span className="text-lg font-medium text-gray-800 group-hover:text-pink-500
+                <span className="text-base sm:text-lg font-medium text-gray-800 group-hover:text-pink-500
                               transition-colors duration-200">
                   {category.name}
                 </span>

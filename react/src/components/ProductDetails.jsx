@@ -134,91 +134,90 @@ const ProductDetails = () => {
     : product.price;
 
   return (
-    <div className="max-w-7xl mx-auto p-4 grid grid-cols-1 md:grid-cols-2 gap-8">
-      {/* Left Column - Images */}
-      <div className="space-y-4">
-        <div className="relative">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        {/* Product image */}
+        <div className="relative aspect-square">
           <img 
             src={product.image_url || "/api/placeholder/400/400"} 
             alt={product.name}
-            className="w-full rounded-lg"
+            className="w-full h-full object-cover rounded-lg"
+            loading="lazy"
           />
           <button className="absolute top-4 right-4 p-1.5 bg-white rounded-full opacity-80 hover:opacity-100">
             <Heart className="w-6 h-6 text-gray-600" />
           </button>
         </div>
-      </div>
 
-      {/* Right Column - Product Details */}
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            {product.is_eggless && (
-              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">EGGLESS</span>
-            )}
+        {/* Product details */}
+        <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              {product.is_eggless && (
+                <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">EGGLESS</span>
+              )}
+            </div>
+            <h1 className="text-2xl font-semibold">{product.name}</h1>
+            <div className="flex items-center gap-2">
+              <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">★ {product.rating}</span>
+              <span className="text-gray-600">{product.review_count} Reviews</span>
+            </div>
           </div>
-          <h1 className="text-2xl font-semibold">{product.name}</h1>
-          <div className="flex items-center gap-2">
-            <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">★ {product.rating}</span>
-            <span className="text-gray-600">{product.review_count} Reviews</span>
-          </div>
-        </div>
 
-        <div className="space-y-4">
           <div className="text-2xl font-bold">
             ₹ {variants.find(v => v.id === selectedVariant)?.price}
           </div>
           
           <div>
-          <h3 className="font-medium mb-2">Make this gift extra special</h3>
-          {variants.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4">
-              {variants.map((variant) => (
-                <div 
-                  key={variant.id}
-                  className={`p-4 border rounded-lg cursor-pointer ${
-                    selectedVariant === variant.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                  }`}
-                  onClick={() => setSelectedVariant(variant.id)}
-                >
-                  <img 
-                    src={product.image_url || "/api/placeholder/200/200"} 
-                    alt={variant.name} 
-                    className="w-full h-24 object-cover rounded mb-2" 
-                  />
-                  <div className="text-sm">{variant.name}</div>
-                  <div className="font-semibold">₹ {variant.price}</div>
+            <h3 className="font-medium mb-2">Make this gift extra special</h3>
+            {variants.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {variants.map((variant) => (
+                  <div 
+                    key={variant.id}
+                    className={`p-3 sm:p-4 border rounded-lg cursor-pointer ${
+                      selectedVariant === variant.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                    }`}
+                    onClick={() => setSelectedVariant(variant.id)}
+                  >
+                    <img 
+                      src={product.image_url || "/api/placeholder/200/200"} 
+                      alt={variant.name} 
+                      className="w-full h-24 object-cover rounded mb-2" 
+                    />
+                    <div className="text-sm">{variant.name}</div>
+                    <div className="font-semibold">₹ {variant.price}</div>
                   </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-gray-500">Not Available</div>
-          )}
-        </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-gray-500">Not Available</div>
+            )}
+          </div>
 
           {/* Weight Section */}
-        <div>
-          <h3 className="font-medium mb-2">Weight</h3>
-          {product.available_weights?.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {product.available_weights.map((weight) => (
-              <button
-                key={weight.value}
-                className={`px-4 py-2 rounded border ${
-                  selectedWeight === weight.value 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200'
-                }`}
-                onClick={() => setSelectedWeight(weight.value)}
-              >
-                {weight.label}
-              </button>
-            ))}
+          <div>
+            <h3 className="font-medium mb-2">Weight</h3>
+            {product.available_weights?.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {product.available_weights.map((weight) => (
+                  <button
+                    key={weight.value}
+                    className={`px-4 py-2 rounded border ${
+                      selectedWeight === weight.value 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200'
+                    }`}
+                    onClick={() => setSelectedWeight(weight.value)}
+                  >
+                    {weight.label}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="text-gray-500">Not Available</div>
+            )}
           </div>
-          ) : (
-            <div className="text-gray-500">Not Available</div>
-          )}
-        </div>
 
           <div className="space-y-2">
             <div className="flex justify-between">
@@ -256,22 +255,22 @@ const ProductDetails = () => {
             <p className="text-gray-600">{product.description}</p>
           </div>
 
-          <div className="pt-4 flex gap-4">
-          <button 
-            onClick={addToCart}
-            disabled={!selectedVariant}
-            className="flex-1 px-6 py-3 border border-blue-500 text-blue-500 rounded-lg font-medium disabled:opacity-50"
-          >
-            ADD TO CART
-          </button>
-          <button 
-            onClick={handleBuyNow}
-            disabled={!selectedVariant}
-            className="flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg font-medium disabled:opacity-50"
-          >
-            BUY NOW | ₹ {price || 'N/A'}
-          </button>
-        </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button 
+              onClick={addToCart}
+              disabled={!selectedVariant}
+              className="w-full sm:w-auto px-4 py-2 border border-blue-500 text-blue-500 rounded-lg font-medium disabled:opacity-50"
+            >
+              ADD TO CART
+            </button>
+            <button 
+              onClick={handleBuyNow}
+              disabled={!selectedVariant}
+              className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-lg font-medium disabled:opacity-50"
+            >
+              BUY NOW | ₹ {price || 'N/A'}
+            </button>
+          </div>
         </div>
       </div>
 

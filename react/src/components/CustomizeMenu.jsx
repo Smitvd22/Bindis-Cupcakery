@@ -16,8 +16,8 @@ const CustomizeMenu = () => {
     is_eggless: false,
     shape: '',
     type: '',
-    available_weights: {},
-    variants: {}
+    available_weights: [], // Changed to array
+    variants: []          // Changed to array
   });
   const [showAddProduct, setShowAddProduct] = useState(false);
 
@@ -59,24 +59,56 @@ const CustomizeMenu = () => {
   const addProduct = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(getApiUrl(API_ENDPOINTS.adminProducts), newProduct);
-      setNewProduct({
-        category_id: '',
-        name: '',
-        description: '',
-        price: '',
-        image_url: '',
-        is_bestseller: false,
-        is_eggless: false,
-        shape: '',
-        type: '',
-        available_weights: {},
-        variants: {}
-      });
-      setShowAddProduct(false);
-      fetchCategories();
+      // Validate and truncate input data
+      const productData = {
+        category_id: parseInt(newProduct.category_id),
+        name: newProduct.name.slice(0, 100), // Limit name length
+        description: newProduct.description.slice(0, 500), // Limit description length
+        price: parseFloat(newProduct.price) || 0,
+        image_url: newProduct.image_url.slice(0, 500), // Limit URL length
+        is_bestseller: Boolean(newProduct.is_bestseller),
+        is_eggless: Boolean(newProduct.is_eggless),
+        shape: (newProduct.shape || '').slice(0, 50),
+        type: (newProduct.type || '').slice(0, 50),
+        available_weights: Array.isArray(newProduct.available_weights) 
+          ? newProduct.available_weights.slice(0, 10) // Limit number of weights
+          : [],
+        variants: Array.isArray(newProduct.variants) 
+          ? newProduct.variants.slice(0, 10) // Limit number of variants
+          : []
+      };
+
+      const response = await axios.post(getApiUrl(API_ENDPOINTS.adminProducts), productData);
+      
+      if (response.data) {
+        // Reset form
+        setNewProduct({
+          category_id: '',
+          name: '',
+          description: '',
+          price: '',
+          image_url: '',
+          is_bestseller: false,
+          is_eggless: false,
+          shape: '',
+          type: '',
+          available_weights: [],
+          variants: []
+        });
+        setShowAddProduct(false);
+        await fetchCategories();
+        // Show success message
+        alert('Product added successfully!');
+      }
     } catch (error) {
       console.error('Error adding product:', error);
+      // Show user-friendly error message
+      alert(
+        'Failed to add product. Please check:\n' +
+        '- All text fields are under 500 characters\n' +
+        '- Image URL is valid\n' +
+        '- Price is a valid number'
+      );
     }
   };
 
@@ -98,6 +130,14 @@ const CustomizeMenu = () => {
     } catch (error) {
       console.error('Error toggling product status:', error);
     }
+  };
+
+  // Add available weight handler
+  const handleAddWeight = (weight) => {
+    setNewProduct(prev => ({
+      ...prev,
+      available_weights: [...prev.available_weights, { value: weight, label: `${weight}kg` }]
+    }));
   };
 
   return (
@@ -143,6 +183,7 @@ const CustomizeMenu = () => {
                 value={newProduct.category_id}
                 onChange={(e) => setNewProduct({ ...newProduct, category_id: e.target.value })}
                 className="border p-3 rounded-lg w-full"
+                required
               >
                 <option value="">Select Category</option>
                 {categories.map((category) => (
@@ -157,12 +198,16 @@ const CustomizeMenu = () => {
                 value={newProduct.name}
                 onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                 className="border p-3 rounded-lg w-full"
+                maxLength={100}
+                required
               />
               <textarea
                 placeholder="Product Description"
                 value={newProduct.description}
                 onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
                 className="border p-3 rounded-lg w-full"
+                maxLength={500}
+                required
               />
               <input
                 type="number"
@@ -170,13 +215,18 @@ const CustomizeMenu = () => {
                 value={newProduct.price}
                 onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
                 className="border p-3 rounded-lg w-full"
+                step="0.01"
+                min="0"
+                required
               />
               <input
-                type="text"
+                type="url"
                 placeholder="Image URL"
                 value={newProduct.image_url}
                 onChange={(e) => setNewProduct({ ...newProduct, image_url: e.target.value })}
                 className="border p-3 rounded-lg w-full"
+                maxLength={500}
+                required
               />
               <div className="flex space-x-4">
                 <label className="flex items-center">

@@ -44,8 +44,8 @@ const Register = ({setAuth}) => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 shadow-lg rounded-lg w-96">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Register</h1>
+      <div className="bg-white p-4 sm:p-8 shadow-lg rounded-lg w-full max-w-md mx-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-center text-gray-800 mb-6">Register</h1>
         <form onSubmit={onSubmit} className="space-y-4">
           <input
             type="text"

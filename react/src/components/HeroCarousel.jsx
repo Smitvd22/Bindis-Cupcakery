@@ -47,16 +47,16 @@ export default function HeroCarousel() {
   };
 
   return (
-    <div className="bg-pink-50 py-8">
+    <div className="bg-pink-50 py-4 sm:py-8">
       <div
-        className="relative max-w-7xl mx-auto rounded-3xl overflow-hidden shadow-lg group"
+        className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Aspect ratio container */}
-        <div className="relative w-full" style={{ paddingTop: "39.0625%" }}>
+        <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
           {/* (500/1280 * 100) */}
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 rounded-xl sm:rounded-3xl overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentIndex}
@@ -77,7 +77,7 @@ export default function HeroCarousel() {
 
             {/* Navigation Arrows */}
             <button
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-pink-50 
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-pink-50 
                          hover:bg-pink transition-all duration-300 flex items-center justify-center
                          opacity-0 group-hover:opacity-100 shadow-lg z-10"
               onClick={prevSlide}
@@ -86,7 +86,7 @@ export default function HeroCarousel() {
             </button>
 
             <button
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-pink-50 
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-pink-50 
                          hover:bg-pink transition-all duration-300 flex items-center justify-center
                          opacity-0 group-hover:opacity-100 shadow-lg z-10"
               onClick={nextSlide}

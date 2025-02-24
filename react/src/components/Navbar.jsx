@@ -21,6 +21,14 @@ const MobileHeader = ({
       <Search className="h-6 w-6" />
     </button>
     
+    <Link 
+      to="/cart" 
+      className="p-2 text-black hover:text-pink-600"
+      aria-label="Cart"
+    >
+      <ShoppingCart className="h-6 w-6" />
+    </Link>
+    
     {isAuthenticated ? (
       <button
         onClick={() => setIsProfileOpen(true)}

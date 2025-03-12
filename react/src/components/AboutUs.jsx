@@ -2,6 +2,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Heart, Cake, LeafyGreen, ChefHat } from "lucide-react";
 
+// 
+
 const FeatureCard = ({ feature, index }) => (
   <motion.div
     className="relative overflow-hidden bg-white p-6 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"

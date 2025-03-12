@@ -40,6 +40,7 @@ app.use('/admin', require('./routes/admin'));
 app.use("/api/reviews", require("./routes/reviews"));
 app.use("/hampers", require("./routes/hampers"));
 app.use('/payment', require('./routes/payment'));
+app.use('/test', require('./routes/test'));
 
 app.set('twilioClient', TwilioClient); // Make available to routes
 

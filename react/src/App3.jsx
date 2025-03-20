@@ -181,6 +181,8 @@ const AppContent = () => {
                 <Route path="/payment" element={<Payment />} />
                 <Route path="/success/" element={<Success />} />
                 <Route path="/failure/" element={<Failure />} />
+                <Route path="/category/bestsellers" element={<ViewAllProducts category="bestsellers" />} />
+                <Route path="/category/new-additions" element={<ViewAllProducts category="new-additions" />} />
                 {/* <Route path="/search" element={<SearchPage />} /> */}
                 <Route
                   path="/admin/login"

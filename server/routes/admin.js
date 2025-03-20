@@ -532,20 +532,59 @@ router.post("/products", async (req, res) => {
 // Delete product
 router.delete("/products/:productId", async (req, res) => {
   const { productId } = req.params;
+  const client = await pool.connect();
+  
   try {
-    const result = await pool.query(
+    await client.query('BEGIN');
+
+    // First check if product exists
+    const checkProduct = await client.query(
+      "SELECT * FROM products WHERE product_id = $1",
+      [productId]
+    );
+
+    if (checkProduct.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // Delete from dependent tables first
+    await client.query(
+      "DELETE FROM cart_items WHERE product_id = $1",
+      [productId]
+    );
+
+    await client.query(
+      "DELETE FROM reviews WHERE product_id = $1",
+      [productId]
+    );
+
+    await client.query(
+      "DELETE FROM user_pending_reviews WHERE product_id = $1",
+      [productId]
+    );
+
+    // Finally delete the product
+    const result = await client.query(
       "DELETE FROM products WHERE product_id = $1 RETURNING *",
       [productId]
     );
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Product not found" });
-    }
+    await client.query('COMMIT');
 
-    res.json({ message: "Product deleted successfully" });
+    res.json({ 
+      message: "Product deleted successfully",
+      deletedProduct: result.rows[0]
+    });
   } catch (err) {
+    await client.query('ROLLBACK');
     console.error("Error deleting product:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ 
+      error: "Internal Server Error",
+      details: err.message 
+    });
+  } finally {
+    client.release();
   }
 });
 

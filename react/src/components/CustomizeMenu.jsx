@@ -115,10 +115,19 @@ const CustomizeMenu = () => {
   const deleteProduct = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.delete(getApiUrl(`${API_ENDPOINTS.adminProducts}/${productId}`));
-        fetchCategories();
+        console.log('Deleting product:', productId);
+        const response = await axios.delete(getApiUrl(`${API_ENDPOINTS.adminProducts}/${productId}`));
+        
+        if (response.status === 200) {
+          console.log('Delete response:', response.data);
+          alert('Product deleted successfully!');
+          await fetchCategories(); // Refresh the list
+        }
       } catch (error) {
         console.error('Error deleting product:', error);
+        const errorMessage = error.response?.data?.error || 'Failed to delete product. Please try again.';
+        console.error('Error details:', errorMessage);
+        alert(errorMessage);
       }
     }
   };

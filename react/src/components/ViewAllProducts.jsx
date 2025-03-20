@@ -3,8 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 import { getApiUrl, API_ENDPOINTS } from '../config/api';
 
-const ViewAllProducts = () => {
+const ViewAllProducts = ({ category }) => {
   const { categoryName } = useParams();
+  const actualCategory = category || categoryName;
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,18 +13,24 @@ const ViewAllProducts = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [categoryName, sortBy]);
+  }, [actualCategory, sortBy]);
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(
-        getApiUrl(`${API_ENDPOINTS.products}/category/${encodeURIComponent(categoryName)}?sort=${sortBy}`)
-      );
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
+      let endpoint;
+      switch (actualCategory) {
+        case 'bestsellers':
+          endpoint = `${API_ENDPOINTS.products}/category/bestsellers?sort=${sortBy}`;
+          break;
+        case 'new-additions':
+          endpoint = `${API_ENDPOINTS.products}/category/new-additions?sort=${sortBy}`;
+          break;
+        default:
+          endpoint = `${API_ENDPOINTS.products}/category/${encodeURIComponent(actualCategory)}?sort=${sortBy}`;
       }
       
+      const response = await fetch(getApiUrl(endpoint));
+      if (!response.ok) throw new Error('Failed to fetch products');
       const data = await response.json();
       setProducts(data);
     } catch (err) {
@@ -96,7 +103,7 @@ const ViewAllProducts = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold capitalize">{categoryName} Cakes</h1>
+        <h1 className="text-2xl font-bold capitalize">{categoryName}</h1>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}

@@ -182,7 +182,7 @@ function Navbar({ isAuthenticated, setAuth, userName, userEmail, userPhone }) {
     { name: "Brownie", path: "/category/Brownie" },
     { name: "Cake", path: "/category/Cake" },
     { name: "Cake Pops", path: "/category/Cake%20Pops" },
-    { name: "Cheesecake", path: "/category/Cheesecake" },
+    { name: "Cheesecake", path: "/category/Cheese%20Cake" },
     { name: "Cookies", path: "/category/Cookies" },
     { name: "Donut", path: "/category/Donut" },
     { name: "Ice Cream", path: "/category/Ice%20Cream" },

@@ -1,17 +1,51 @@
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function ProductSection({ title, products = [], loading = false, error = null }) {
   const scrollContainerRef = useRef(null);
+  const [cardsPerView, setCardsPerView] = useState(4);
+
+  useEffect(() => {
+    const updateCardsPerView = () => {
+      if (window.innerWidth >= 1024) {
+        setCardsPerView(4); // Desktop
+      } else if (window.innerWidth >= 768) {
+        setCardsPerView(3); // Tablet
+      } else if (window.innerWidth >= 640) {
+        setCardsPerView(2); // Small tablet
+      } else {
+        setCardsPerView(1); // Mobile
+      }
+    };
+
+    updateCardsPerView();
+    window.addEventListener('resize', updateCardsPerView);
+    return () => window.removeEventListener('resize', updateCardsPerView);
+  }, []);
 
   const scroll = (direction) => {
     if (scrollContainerRef.current) {
-      const scrollAmount = direction === "left" ? -400 : 400;
-      scrollContainerRef.current.scrollBy({
-        left: scrollAmount,
-        behavior: "smooth",
+      const container = scrollContainerRef.current;
+      const cards = container.getElementsByClassName('product-card');
+      if (!cards.length) return;
+
+      const cardWidth = cards[0].offsetWidth;
+      const gap = 32; // 8rem gap between cards
+      const scrollOffset = (cardWidth + gap) * cardsPerView;
+      
+      const currentScroll = container.scrollLeft;
+      const targetScroll = direction === "left" 
+        ? Math.max(0, currentScroll - scrollOffset)
+        : Math.min(
+            container.scrollWidth - container.clientWidth,
+            currentScroll + scrollOffset
+          );
+
+      container.scrollTo({
+        left: targetScroll,
+        behavior: "smooth"
       });
     }
   };
@@ -76,14 +110,25 @@ export default function ProductSection({ title, products = [], loading = false, 
     );
   }
   
-  const sectionUrlName = title.split(" ").join("-").toLowerCase();
+  const getSectionUrl = (title) => {
+    switch (title.toLowerCase()) {
+      case "our bestsellers":
+        return "bestsellers";
+      case "new additions":
+        return "new-additions";
+      default:
+        return title.split(" ").join("-").toLowerCase();
+    }
+  };
+
+  const sectionUrl = getSectionUrl(title);
 
   return (
     <section className="py-20 bg-pink-50">
-      <div className="container mx-auto px-8 max-w-7xl">
+      <div className="container mx-auto px-4 md:px-8 max-w-7xl">
         <div className="flex justify-between items-center mb-12">
           <h2 className="text-3xl font-bold text-gray-800">{title}</h2>
-          <Link to={`/category/${sectionUrlName}`}>
+          <Link to={`/category/${sectionUrl}`} className="inline-block">
             <motion.button
               className="px-6 py-2 bg-pink-200 text-gray-800 border border-pink-300 rounded-md hover:bg-pink-300 hover:text-gray-900 transition-colors duration-300"
               whileHover={{ scale: 1.02 }}
@@ -94,20 +139,25 @@ export default function ProductSection({ title, products = [], loading = false, 
           </Link>
         </div>
 
-        <div className="relative px-14">
+        <div className="relative px-2 md:px-14">
           <div
             ref={scrollContainerRef}
-            className="flex gap-8 overflow-x-auto scrollbar-hide scroll-smooth"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            className="flex gap-8 overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth"
+            style={{ 
+              scrollbarWidth: "none", 
+              msOverflowStyle: "none",
+              scrollPaddingLeft: "1rem",
+              scrollPaddingRight: "1rem"
+            }}
           >
             {products.map((product) => (
               <motion.div
                 key={product.id}
-                className="flex-none w-72 bg-white rounded-lg shadow-md overflow-hidden group cursor-pointer"
+                className="product-card flex-none w-[280px] md:w-[calc(25%-24px)] snap-start bg-white rounded-lg shadow-md overflow-hidden group cursor-pointer"
                 whileHover={{ y: -5 }}
                 onClick={() => window.open(`/product/${product.id}`, "_blank")}
               >
-                <div className="relative h-56">
+                <div className="relative h-40 sm:h-48 md:h-56">
                   <img
                     src={product.image_url || "/api/placeholder/300/300"}
                     alt={product.name}
@@ -130,20 +180,20 @@ export default function ProductSection({ title, products = [], loading = false, 
             ))}
           </div>
 
-          {products.length > 4 && (
+          {products.length > cardsPerView && (
             <>
               <button
                 onClick={() => scroll("left")}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+                className="absolute -left-2 md:left-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors z-10"
               >
-                <ChevronLeft className="w-7 h-7 text-gray-600" />
+                <ChevronLeft className="w-6 h-6 md:w-7 md:h-7 text-gray-600" />
               </button>
 
               <button
                 onClick={() => scroll("right")}
-                className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+                className="absolute -right-2 md:right-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors z-10"
               >
-                <ChevronRight className="w-7 h-7 text-gray-600" />
+                <ChevronRight className="w-6 h-6 md:w-7 md:h-7 text-gray-600" />
               </button>
             </>
           )}
@@ -152,4 +202,3 @@ export default function ProductSection({ title, products = [], loading = false, 
     </section>
   );
 }
-  

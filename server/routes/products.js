@@ -115,6 +115,104 @@ router.get("/random/:productId", async (req, res) => {
     }
 });
 
+// Get all bestsellers
+router.get("/category/bestsellers", async (req, res) => {
+    try {
+        const { sort = 'popularity' } = req.query;
+        
+        let orderByClause;
+        switch (sort) {
+            case 'price_low':
+                orderByClause = 'p.price ASC';
+                break;
+            case 'price_high':
+                orderByClause = 'p.price DESC';
+                break;
+            case 'rating':
+                orderByClause = 'p.rating DESC NULLS LAST';
+                break;
+            case 'popularity':
+            default:
+                orderByClause = 'p.review_count DESC NULLS LAST';
+        }
+
+        const query = `
+            SELECT 
+                p.product_id as id,
+                p.name,
+                p.description,
+                p.price,
+                p.image_url,
+                p.rating,
+                p.review_count,
+                p.is_bestseller,
+                c.name as category_name,
+                c.category_id
+            FROM products p
+            JOIN categories c ON p.category_id = c.category_id
+            WHERE p.is_active = true 
+            AND p.is_bestseller = true
+            ORDER BY ${orderByClause}
+        `;
+        
+        const result = await pool.query(query);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+});
+
+// Get all new additions
+router.get("/category/new-additions", async (req, res) => {
+    try {
+        const { sort = 'popularity' } = req.query;
+        
+        let orderByClause;
+        switch (sort) {
+            case 'price_low':
+                orderByClause = 'p.price ASC';
+                break;
+            case 'price_high':
+                orderByClause = 'p.price DESC';
+                break;
+            case 'rating':
+                orderByClause = 'p.rating DESC NULLS LAST';
+                break;
+            case 'popularity':
+                orderByClause = 'p.review_count DESC NULLS LAST';
+                break;
+            default:
+                orderByClause = 'p.created_at DESC';
+        }
+
+        const query = `
+            SELECT 
+                p.product_id as id,
+                p.name,
+                p.description,
+                p.price,
+                p.image_url,
+                p.rating,
+                p.review_count,
+                p.is_bestseller,
+                c.name as category_name,
+                c.category_id
+            FROM products p
+            JOIN categories c ON p.category_id = c.category_id
+            WHERE p.is_active = true
+            ORDER BY ${orderByClause}
+            LIMIT 50
+        `;
+        
+        const result = await pool.query(query);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+});
+
 // Fetch products by category name
 router.get("/category/:categoryName", async (req, res) => {
     try {

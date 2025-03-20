@@ -53,9 +53,8 @@ export default function HeroCarousel() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Aspect ratio container */}
-        <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
-          {/* (500/1280 * 100) */}
+        {/* Adjust aspect ratio for better visibility */}
+        <div className="relative w-full" style={{ paddingTop: "40%" }}> {/* Changed from 56.25% */}
           <div className="absolute inset-0 rounded-xl sm:rounded-3xl overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
@@ -70,7 +69,7 @@ export default function HeroCarousel() {
                 <img
                   src={carouselItems[currentIndex].image || "/placeholder.svg"}
                   alt={`Slide ${currentIndex + 1}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-center"
                 />
               </motion.div>
             </AnimatePresence>

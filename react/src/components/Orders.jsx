@@ -66,15 +66,15 @@ const Orders = () => {
   };
 
   const ProductCard = ({ product }) => (
-    <Link 
-      to={`/product/${product.id}`}
-      className="bg-white rounded-lg shadow-md p-3 sm:p-4 hover:shadow-lg transition-shadow duration-300"
+    <div 
+      className="bg-white rounded-lg shadow-md overflow-hidden group relative cursor-pointer flex flex-col h-full"
+      onClick={() => window.open(`/product/${product.id}`, '_blank')}
     >
-      <div className="relative aspect-square overflow-hidden rounded-lg">
+      <div className="relative aspect-square w-full">
         <img 
-          src={product.image_url || "/api/placeholder/300/300"}
+          src={product.image_url || "/api/placeholder/300/300"} 
           alt={product.name}
-          className="w-full h-full object-cover rounded-lg transform hover:scale-105 transition-transform duration-300"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
           onError={(e) => {
             e.target.onerror = null;
@@ -82,32 +82,30 @@ const Orders = () => {
           }}
         />
         <button 
-          className="absolute top-2 right-2 p-1.5 bg-white rounded-full opacity-80 hover:opacity-100"
-          onClick={(e) => {
-            e.preventDefault();
-            // Add wishlist functionality here
-          }}
+          className="absolute top-3 right-3 p-1.5 bg-white rounded-full opacity-80 hover:opacity-100 transition-opacity duration-200 z-10"
+          onClick={(e) => e.stopPropagation()}
         >
           <Heart className="w-5 h-5 text-gray-600" />
         </button>
       </div>
-      <div className="mt-3 space-y-2">
-        <h3 className="text-base sm:text-lg font-medium text-gray-900">{product.name}</h3>
-        <div className="flex items-center justify-between">
-          <div className="text-lg sm:text-xl font-semibold text-gray-900">₹ {product.price}</div>
-          {product.rating > 0 && (
-            <span className="inline-flex items-center px-2 py-1 rounded-md bg-green-100 text-green-800 text-sm">
-              ★ {product.rating.toFixed(1)}
+      <div className="p-4 flex-1 flex flex-col">
+        <h3 className="font-medium text-lg mb-1 line-clamp-2">{product.name}</h3>
+        <div className="text-xl font-semibold mb-2">₹ {product.price}</div>
+        <div className="flex items-center gap-2 mb-2">
+          <span className="inline-flex items-center px-2 py-1 rounded-md bg-green-100 text-green-800">
+            <span className="text-sm">★ {product.rating}</span>
+          </span>
+          {product.review_count > 0 && (
+            <span className="text-sm text-gray-500">
+              ({product.review_count} Reviews)
             </span>
           )}
         </div>
-        {product.review_count > 0 && (
-          <p className="text-sm text-gray-500">
-            ({product.review_count} {product.review_count === 1 ? 'Review' : 'Reviews'})
-          </p>
-        )}
+        <div className="text-sm text-gray-500 mt-auto">
+          Earliest Delivery: In 3 hours
+        </div>
       </div>
-    </Link>
+    </div>
   );
 
   if (loading) {

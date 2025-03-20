@@ -42,24 +42,29 @@ const ViewAllProducts = ({ category }) => {
 
   const ProductCard = ({ product }) => (
     <div 
-      className="bg-white rounded-lg shadow-md overflow-hidden group relative cursor-pointer"
+      className="bg-white rounded-lg shadow-md overflow-hidden group relative cursor-pointer flex flex-col h-full"
       onClick={() => window.open(`/product/${product.id}`, '_blank')}
     >
-      <div className="relative">
+      <div className="relative aspect-square w-full">
         <img 
           src={product.image_url || "/api/placeholder/300/300"} 
           alt={product.name}
-          className="w-full h-48 object-cover"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "/images/placeholder.png";
+          }}
         />
         <button 
-          className="absolute top-2 right-2 p-1.5 bg-white rounded-full opacity-80 hover:opacity-100"
+          className="absolute top-3 right-3 p-1.5 bg-white rounded-full opacity-80 hover:opacity-100 transition-opacity duration-200 z-10"
           onClick={(e) => e.stopPropagation()}
         >
           <Heart className="w-5 h-5 text-gray-600" />
         </button>
       </div>
-      <div className="p-4">
-        <h3 className="font-medium text-lg mb-1">{product.name}</h3>
+      <div className="p-4 flex-1 flex flex-col">
+        <h3 className="font-medium text-lg mb-1 line-clamp-2">{product.name}</h3>
         <div className="text-xl font-semibold mb-2">₹ {product.price}</div>
         <div className="flex items-center gap-2 mb-2">
           <span className="inline-flex items-center px-2 py-1 rounded-md bg-green-100 text-green-800">
@@ -71,7 +76,7 @@ const ViewAllProducts = ({ category }) => {
             </span>
           )}
         </div>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-500 mt-auto">
           Earliest Delivery: In 3 hours
         </div>
       </div>

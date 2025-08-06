@@ -11,10 +11,10 @@ This project was created as part of the **GWOC (GirlScript Winter of Code)** pro
 
 ## 👥 Contributors
 
-- **[Team Member 1]** - Full-Stack Development & Database Design
-- **[Team Member 2]** - Frontend Development & UI/UX Design  
-- **[Team Member 3]** - Backend Integration & API Development
-- **[Team Member 4]** - Payment Integration & DevOps
+- **[Smit Deoghare]** - Full-Stack Development & Database Design  
+- **[Naishadh Rana]** - Backend Integration & API Development
+- **[Angela Dutta]** - Frontend Development & UI/UX Design
+- **[Rudray Dave]** - Payment Integration & DevOps
 
 ## 🎯 Project Overview
 

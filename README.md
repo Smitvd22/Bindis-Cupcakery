@@ -1,10 +1,10 @@
 # Bindi's Cupcakery 🧁
 
-A modern, full-stack e-commerce web application for a cloud kitchen specializing in cupcakes, cakes, and custom dessert hampers. This project was developed for the **GWOC (GirlScript Winter of Code)** program, showcasing a complete bakery management system with order processing, payment integration, and real-time notifications.
+A modern, full-stack e-commerce web application for a cloud kitchen specializing in cupcakes, cakes, and custom dessert hampers. This project was developed for the **GWOC (Google Winter of Code)** program, showcasing a complete bakery management system with order processing, payment integration, and real-time notifications.
 
 ## 🏆 Project Achievement
 
-This project was created as part of the **GWOC (GirlScript Winter of Code)** program, demonstrating advanced full-stack development skills with modern web technologies and comprehensive e-commerce functionality.
+This project was created as part of the **GWOC (Google Winter of Code)** program, demonstrating advanced full-stack development skills with modern web technologies and comprehensive e-commerce functionality.
 
 ![GWOC](https://img.shields.io/badge/GWOC-Project-brightgreen?style=for-the-badge&logo=git&logoColor=white)
 ![Full Stack](https://img.shields.io/badge/Full_Stack-Application-blue?style=for-the-badge&logo=react&logoColor=white)
